@@ -15,12 +15,19 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+  owners = ["099720109477"] #canonical
 }
 
 locals {
   instances = {
-    instance1 = { ami = data.aws_ami.ubuntu.id, instance_type = "t3.micro" }
+    instance1 = {
+      ami           = data.aws_ami.ubuntu.id
+      instance_type = "t3.micro"
+    }
   }
 }
 
@@ -36,7 +43,9 @@ resource "aws_instance" "this" {
   key_name                    = aws_key_pair.ssh_key.key_name
   associate_public_ip_address = true
 
-  tags = { Name = each.key }
+  tags = {
+    Name = each.key
+  }
 }
 
 output "aws_instances" {
